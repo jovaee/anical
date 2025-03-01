@@ -47,7 +47,9 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: "anical",
+		Title:  "anical",
+		Width:  500,
+		Height: 600,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -59,17 +61,28 @@ func main() {
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
-		// StartState:       application.WindowStateMinimised,
+		Frameless:        true,
+		// StartState: application.WindowStateMinimised,
 	})
 
-	// Create a goroutine that emits an event containing the current time every second.
+	// Create a goroutine that emits an event containing the current time every minute.
 	// The frontend can listen to this event and update the UI accordingly.
+	// TODO: Use this to so a countdown for each episode
 	go func() {
 		for {
 			now := time.Now().Format(time.RFC1123)
 			app.EmitEvent("time", now)
-			time.Sleep(time.Second)
+			time.Sleep(time.Minute)
 		}
+	}()
+
+	// Create a goroute that fires a time event after 2 seconds to initialise some things on the UI
+	// This is temporary, remove
+	go func() {
+		time.Sleep(time.Second * 2)
+
+		now := time.Now().Format(time.RFC1123)
+		app.EmitEvent("time", now)
 	}()
 
 	// Run the application. This blocks until the application has been exited.
